@@ -160,11 +160,26 @@ class FeatureEngineer:
         pred_row = cls.create_rolling_features(pred_row, store_item_data, pred_date, rolling_windows)
         pred_row = cls.create_aggregate_features(pred_row, store, item, store_item_data, all_data)
         
-        # Get feature columns (exclude non-feature columns and include 'item')
-        exclude_cols = ['date', 'sales', 'store']
-        feature_cols = [col for col in pred_row.columns if col not in exclude_cols]
+        # Define feature order to match training (XGBoost is sensitive to feature order)
+        feature_order = [
+            'item', 'year', 'month', 'day_of_week', 'day', 'week_of_year', 'quarter',
+            'is_weekend', 'is_month_start', 'is_month_end', 'day_of_year',
+            'month_sin', 'month_cos', 'day_of_week_sin', 'day_of_week_cos',
+            'day_of_year_sin', 'day_of_year_cos',
+            'sales_lag_1', 'sales_lag_3', 'sales_lag_7', 'sales_lag_14',
+            'sales_lag_30', 'sales_lag_60', 'sales_lag_90',
+            'sales_rolling_mean_7', 'sales_rolling_std_7', 'sales_rolling_min_7', 'sales_rolling_max_7',
+            'sales_rolling_mean_14', 'sales_rolling_std_14', 'sales_rolling_min_14', 'sales_rolling_max_14',
+            'sales_rolling_mean_30', 'sales_rolling_std_30', 'sales_rolling_min_30', 'sales_rolling_max_30',
+            'sales_rolling_mean_60', 'sales_rolling_std_60', 'sales_rolling_min_60', 'sales_rolling_max_60',
+            'sales_rolling_mean_90', 'sales_rolling_std_90', 'sales_rolling_min_90', 'sales_rolling_max_90',
+            'store_avg_sales', 'store_std_sales', 'store_median_sales',
+            'item_avg_sales', 'item_std_sales', 'item_median_sales',
+            'store_item_avg_sales', 'store_item_std_sales'
+        ]
         
-        return pred_row[feature_cols], store_item_data
+        # Ensure all expected features exist and return in correct order
+        return pred_row[feature_order], store_item_data
 
 
 # Global feature engineer instance
