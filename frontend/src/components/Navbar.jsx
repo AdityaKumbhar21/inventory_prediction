@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Package, LayoutDashboard, TrendingUp, BarChart3 } from 'lucide-react';
-import { cn } from '../lib/utils.js';
+import { cn } from '@/lib/utils';
 
 function Navbar() {
   const location = useLocation();
