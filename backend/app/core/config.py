@@ -23,10 +23,15 @@ API_DESCRIPTION = "XGBoost-based ML API for retail inventory demand forecasting"
 API_VERSION = "1.0.0"
 
 # CORS settings
+# Specific origins for exact matching
 CORS_ORIGINS = [
     "http://localhost:3000",
-    "https://*.vercel.app",
+    "http://localhost:5173",  # Vite default port
+    "https://inventory-prediction.vercel.app",
 ]
+
+# Regex pattern for Vercel preview deployments (e.g., https://*.vercel.app)
+CORS_ORIGIN_REGEX = r"https://.*\.vercel\.app"
 
 # Business logic constants
 SAFETY_STOCK_PERCENTAGE = 0.2  # 20% safety stock

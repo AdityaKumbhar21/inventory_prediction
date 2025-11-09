@@ -9,6 +9,7 @@ from app.core.config import (
     API_DESCRIPTION,
     API_VERSION,
     CORS_ORIGINS,
+    CORS_ORIGIN_REGEX,
     MODEL_PATH,
     DATA_PATH
 )
@@ -29,6 +30,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
+    allow_origin_regex=CORS_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

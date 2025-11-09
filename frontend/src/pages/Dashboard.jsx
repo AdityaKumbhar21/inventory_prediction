@@ -18,16 +18,46 @@ function Dashboard() {
   const fetchData = async () => {
     try {
       setLoading(true);
+      setError(null);
+      
+      // Configure axios with timeout
+      const axiosConfig = {
+        timeout: 10000, // 10 seconds
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+      
       const [healthRes, modelRes] = await Promise.all([
-        axios.get(`${API_URL}/health`),
-        axios.get(`${API_URL}/model`)
+        axios.get(`${API_URL}/health`, axiosConfig),
+        axios.get(`${API_URL}/model`, axiosConfig)
       ]);
+      
       setHealth(healthRes.data);
       setModel(modelRes.data);
-      setError(null);
     } catch (err) {
-      setError('Failed to fetch data. Make sure the backend is running on ' + API_URL);
-      console.error(err);
+      console.error('API Error:', err);
+      console.error('API URL:', API_URL);
+      console.error('Error details:', {
+        message: err.message,
+        code: err.code,
+        response: err.response?.data,
+        status: err.response?.status,
+      });
+      
+      let errorMessage = 'Failed to connect to the backend API. ';
+      if (err.code === 'ERR_NETWORK') {
+        errorMessage += `Network error - cannot reach ${API_URL}. `;
+        errorMessage += 'Please check if the backend is running and accessible.';
+      } else if (err.response) {
+        errorMessage += `Server returned error: ${err.response.status} - ${err.response.statusText}`;
+      } else if (err.request) {
+        errorMessage += 'No response from server. The backend might be down.';
+      } else {
+        errorMessage += err.message || 'Unknown error occurred';
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
