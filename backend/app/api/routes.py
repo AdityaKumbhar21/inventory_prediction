@@ -159,19 +159,27 @@ async def get_analytics(
 async def forecast_next_days(
     store: int = Path(..., ge=MIN_STORE_ID, le=MAX_STORE_ID),
     item: int = Path(..., ge=MIN_ITEM_ID, le=MAX_ITEM_ID),
-    days: int = Query(7, ge=1, le=MAX_FORECAST_DAYS, description="Number of days to forecast")
+    days: int = Query(7, ge=1, le=MAX_FORECAST_DAYS, description="Number of days to forecast"),
+    start_date: str = Query(None, description="Start date for forecast (YYYY-MM-DD)")
 ):
-    """Forecast sales for the next N days"""
+    """Forecast sales for the next N days starting from a specific date"""
     if model_manager.data is None:
         raise HTTPException(status_code=503, detail="Data not loaded")
     
-    # Get last date in data
-    last_date = model_manager.data['date'].max()
+    # Use provided start_date or default to last date in data
+    if start_date:
+        from datetime import datetime as dt
+        try:
+            base_date = dt.strptime(start_date, '%Y-%m-%d')
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
+    else:
+        base_date = model_manager.data['date'].max()
     
     # Generate predictions for next N days
     predictions = []
     for i in range(1, days + 1):
-        forecast_date = (last_date + timedelta(days=i)).strftime('%Y-%m-%d')
+        forecast_date = (base_date + timedelta(days=i)).strftime('%Y-%m-%d')
         
         request = PredictionRequest(
             store=store,

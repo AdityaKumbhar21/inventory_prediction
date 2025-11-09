@@ -41,7 +41,7 @@ function Prediction() {
       setResult(predRes.data);
 
       const forecastRes = await axios.get(
-        `${API_URL}/forecast/${formData.store}/${formData.item}?days=7`
+        `${API_URL}/forecast/${formData.store}/${formData.item}?days=7&start_date=${formData.date}`
       );
       setForecast(forecastRes.data.predictions);
     } catch (err) {
@@ -157,15 +157,23 @@ function Prediction() {
               {forecast && forecast.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>7-Day Forecast</CardTitle>
+                    <CardTitle>7-Day Forecast (Starting {formData.date})</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <ResponsiveContainer width="100%" height={300}>
                       <AreaChart data={forecast}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
+                        <XAxis 
+                          dataKey="date" 
+                          tickFormatter={(date) => {
+                            const d = new Date(date);
+                            return `${d.getMonth() + 1}/${d.getDate()}`;
+                          }}
+                        />
                         <YAxis />
-                        <Tooltip />
+                        <Tooltip 
+                          labelFormatter={(date) => new Date(date).toLocaleDateString()}
+                        />
                         <Legend />
                         <Area
                           type="monotone"
