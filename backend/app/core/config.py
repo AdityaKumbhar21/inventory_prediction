@@ -27,10 +27,13 @@ API_VERSION = "1.0.0"
 CORS_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",  # Vite default port
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
     "https://inventory-prediction.vercel.app",
 ]
 
 # Regex pattern for Vercel preview deployments (e.g., https://*.vercel.app)
+# This pattern matches any Vercel deployment (production, preview, branch deployments)
 CORS_ORIGIN_REGEX = r"https://.*\.vercel\.app"
 
 # Business logic constants
